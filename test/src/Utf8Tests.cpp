@@ -46,3 +46,23 @@ TEST(Utf8Test, StumpOfTree) {
     const auto actualEncoding = utf8.Encode({0x233B4});
     ASSERT_EQ(expectedEncoding, actualEncoding);
 }
+
+TEST(Utf8Test, CodePointBeyondEndOfLastValidRange) {
+    Utf8::Utf8 utf8;
+    const std::vector< uint8_t > replacementCharacterEncoding{ 0xEF, 0xBF, 0xBD };
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0x200000}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0x110000}));
+}
+
+TEST(Utf8Test, HighAndLowSurrogateHalvesAreInvalid) {
+    Utf8::Utf8 utf8;
+    const std::vector< uint8_t > replacementCharacterEncoding{ 0xEF, 0xBF, 0xBD };
+    ASSERT_EQ((std::vector< uint8_t >{0xED, 0x9F, 0xBF}), utf8.Encode({0xD7FF}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xD800}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xD801}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xD803}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xD8EF}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xDFFE}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xDFEE}));
+    ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xDFFF}));
+}
