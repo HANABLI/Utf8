@@ -10,6 +10,13 @@
 
 namespace Utf8 {
 
+    std::vector< UnicodeCodePoint > AsciiToUnicode(const std::string& ascii) {
+        return std::vector< UnicodeCodePoint >(
+            ascii.begin(), 
+            ascii.end()
+        );
+    }
+
     struct Utf8::Impl
     {
 

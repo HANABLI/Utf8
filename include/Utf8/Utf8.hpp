@@ -11,7 +11,22 @@
 
 
 namespace Utf8 {
+    /**
+     * This represents a single character in Unicode.
+    */
+    typedef uint32_t UnicodeCodePoint;
 
+    /**
+     * This function is for convenience, converting a given ASCII string
+     * into its equivalent sequence of UniCode code points.
+     * 
+     * @param[in] ascii
+     *      This is the ASCII string to convert.
+     * 
+     * @return
+     *      The Unicode code points for the given ASCII string are returned.
+    */
+   std::vector< UnicodeCodePoint > AsciiToUnicode(const std::string& ascii);
     class Utf8
     {
     public:
