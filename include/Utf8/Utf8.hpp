@@ -7,6 +7,7 @@
  * 
  * © 2024 by Hatem Nabli
 */
+#include <stddef.h>
 #include <stdint.h>
 #include <string>
 #include <memory>
