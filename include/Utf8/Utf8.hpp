@@ -7,7 +7,10 @@
  * 
  * © 2024 by Hatem Nabli
 */
+#include <stdint.h>
+#include <string>
 #include <memory>
+#include <vector>
 
 
 namespace Utf8 {
@@ -44,6 +47,16 @@ namespace Utf8 {
         */
        Utf8();
         //public methods
+        /**
+         * This method encodes the given sequence of Unicode code points
+         * into UTF-8.
+         * 
+         * @param[in] codePoints
+         *      Thes are the unicode code points to encode.
+         * @return 
+         *      The UTF-8 encoding of the given Unicode code points is returned
+        */
+        std::vector< uint8_t > Encode(const std::vector< UnicodeCodePoint >& codePoints);
     private:
         /* data */
 
