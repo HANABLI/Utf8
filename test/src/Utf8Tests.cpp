@@ -66,3 +66,29 @@ TEST(Utf8Tests, HighAndLowSurrogateHalvesAreInvalid) {
     ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xDFEE}));
     ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0xDFFF}));
 }
+
+TEST(Utf8Tests, DecodeValidSequences) {
+    struct TestVector {
+        std::string encoding;
+        std::vector< Utf8::UnicodeCodePoint > expectedDecoding;
+    };
+    const std::vector<TestVector> testVectors {
+        { "𣎴",     { 0x233B4 } },
+        { "日本語", { 0x65E5, 0x672C, 0x8A9E } },
+        { "A≢Α.",   { 0x0041, 0x2262, 0x0391, 0x002E } },
+        { "€",      { 0x20AC } },
+        { "Hello",  { 0x48, 0x65, 0x6C, 0x6C, 0x6F }},
+    };
+
+    for( const auto& test: testVectors) {
+        Utf8::Utf8 utf8;
+        const auto actualDecoding = utf8.Decode(test.encoding);
+        ASSERT_EQ(test.expectedDecoding, actualDecoding);
+    }
+}
+
+TEST(Utf8Tests, DecodeFromInputVector) {
+    Utf8::Utf8 utf8;
+    const auto actualDecoding = utf8.Decode(std::vector<uint8_t>{0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E});
+    ASSERT_EQ(std::vector< Utf8::UnicodeCodePoint >{0x65E5, 0x672C, 0x8A9E}, actualDecoding);
+}
