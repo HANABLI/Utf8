@@ -40,21 +40,21 @@ TEST(Utf8Tests, EncodeJapanese_Test) {
     ASSERT_EQ(expectedEncoding, actualEncoding);
 }
 
-TEST(Utf8Test, StumpOfTree) {
+TEST(Utf8Tests, StumpOfTree) {
     Utf8::Utf8 utf8;
     const std::vector< uint8_t > expectedEncoding{ 0xF0, 0xA3, 0x8E, 0xB4 };
     const auto actualEncoding = utf8.Encode({0x233B4});
     ASSERT_EQ(expectedEncoding, actualEncoding);
 }
 
-TEST(Utf8Test, CodePointBeyondEndOfLastValidRange) {
+TEST(Utf8Tests, CodePointBeyondEndOfLastValidRange) {
     Utf8::Utf8 utf8;
     const std::vector< uint8_t > replacementCharacterEncoding{ 0xEF, 0xBF, 0xBD };
     ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0x200000}));
     ASSERT_EQ(replacementCharacterEncoding, utf8.Encode({0x110000}));
 }
 
-TEST(Utf8Test, HighAndLowSurrogateHalvesAreInvalid) {
+TEST(Utf8Tests, HighAndLowSurrogateHalvesAreInvalid) {
     Utf8::Utf8 utf8;
     const std::vector< uint8_t > replacementCharacterEncoding{ 0xEF, 0xBF, 0xBD };
     ASSERT_EQ((std::vector< uint8_t >{0xED, 0x9F, 0xBF}), utf8.Encode({0xD7FF}));
