@@ -58,6 +58,36 @@ namespace Utf8 {
          *      The UTF-8 encoding of the given Unicode code points is returned
         */
         std::vector< uint8_t > Encode(const std::vector< UnicodeCodePoint >& codePoints);
+       /**
+        * This method accept the given sequence of UTF-8 encoded bytes,
+        * and returns any Unicode code points formed from them.
+        * 
+        * Any partial code sequence at the end is held onto and used first
+        * when this method is called again later.
+        * 
+        * this method accept a secquence of bites 
+        * 
+        * @param[in] encoded
+        *       This is the encoded sequence of UTF-8 bytes to decode.
+        * @return
+        *       return all Unicode code points genereated by the decoder.
+       */
+       std::vector< UnicodeCodePoint > Decode(const std::vector< UnicodeCodePoint >& encoded );
+       /**
+        * This method accept the given sequence of UTF-8 encoded bytes,
+        * and returns any Unicode code points formed from them.
+        * 
+        * Any partial code sequence at the end is held onto and used first
+        * when this method is called again later.
+        * 
+        * this method accept a C++ string
+        * 
+        * @param[in] encoded
+        *       This is the encoded sequence of UTF-8 bytes to decode.
+        * @return
+        *       return all Unicode code points genereated by the decoder.
+       */
+       std::vector< UnicodeCodePoint > Decode(const std::string& encoded );
     private:
         /* data */
 

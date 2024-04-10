@@ -12,9 +12,14 @@ namespace {
     /**
      * This is the Unicode replacement character encoded as Utf8.
     */
-    const std::vector< Utf8::UnicodeCodePoint > UTF8_ENCODED_REPLACEMENT_CHAR = {
+    const std::vector< uint8_t > UTF8_ENCODED_REPLACEMENT_CHAR = {
         0xEF, 0xBF, 0xBD 
     };
+
+    /**
+     * This is the Unicode replacement character as a code pont.
+    */
+    const Utf8::UnicodeCodePoint REPLACEMENT_CHARACTER = 0xFFFD;
 
     /**
      * This is the very last code point in Unicode tha is legal.
@@ -49,7 +54,17 @@ namespace Utf8 {
 
     struct Utf8::Impl
     {
-
+        /**
+         * This is where we keep the current character
+         * that is being decoded.
+        */
+        UnicodeCodePoint currentCharacterBeingDecoded = 0;
+        /**
+         * This is the number of input bytes that we still
+         * need to read in before wa can fully assemble
+         * the current character that is being decoded.
+        */
+        size_t numBytesRemainingToDecode = 0;
     };
 
     Utf8::~Utf8() = default;
@@ -99,5 +114,45 @@ namespace Utf8 {
             
         }
         return encoding;
+    }
+
+    std::vector< UnicodeCodePoint > Utf8::Decode(const std::string& encoded ) {
+        return Decode(
+            std::vector<uint8_t>(
+                encoded.begin(),
+                encoded.end()
+            )
+        );
+    }
+
+    std::vector< UnicodeCodePoint > Utf8::Decode(const std::vector< UnicodeCodePoint >& encoded ) {
+        std::vector< UnicodeCodePoint > output;
+        for (auto octet: encoded) {
+            if (impl_->numBytesRemainingToDecode == 0) {
+                if ((octet & 0x80) == 0) {
+                    output.push_back(octet);
+                } else if ((octet & 0xE0) == 0xC0) {
+                    impl_->numBytesRemainingToDecode = 1;
+                    impl_->currentCharacterBeingDecoded = (octet & 0x1F);
+                } else if ((octet & 0xF0) == 0xE0) {
+                    impl_->numBytesRemainingToDecode = 2;
+                    impl_->currentCharacterBeingDecoded = (octet & 0x0F);
+                } else if ((octet & 0xF8) == 0xF0) {
+                    impl_->numBytesRemainingToDecode = 3;
+                    impl_->currentCharacterBeingDecoded = (octet & 0x07);
+                } else {
+                    // this is dangerous because the next character is likely a continuation character, and we'll end up
+                    // outputting at least one more replacement character.
+                    output.push_back(REPLACEMENT_CHARACTER);
+                }
+            } else {
+                impl_->currentCharacterBeingDecoded <<= 6;
+                impl_->currentCharacterBeingDecoded += (octet & 0x3F);
+                if (--impl_->numBytesRemainingToDecode == 0) {
+                    output.push_back(impl_->currentCharacterBeingDecoded);
+                    impl_->currentCharacterBeingDecoded = 0;
+                }
+            }
+        }
     }
 }
