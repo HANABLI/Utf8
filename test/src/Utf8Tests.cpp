@@ -129,3 +129,17 @@ TEST(Utf8Tests, RejectOverlongSequences) {
         ++index;
     }
 }
+
+TEST(Utf8Tests, StumpOfTreeDecodedInTwoParts) {
+    Utf8::Utf8 utf8;
+    const std::vector< uint8_t > firstHalfOfEncoding{ 0xF0, 0xA3 };
+    const std::vector< uint8_t > lastHalfOfEncoding{ 0x8E, 0xB4 };
+    ASSERT_EQ(
+        (std::vector< Utf8::UnicodeCodePoint >{}),
+        utf8.Decode(firstHalfOfEncoding)
+    );
+    ASSERT_EQ(
+         (std::vector< Utf8::UnicodeCodePoint >{ 0x233B4 }),
+        utf8.Decode(lastHalfOfEncoding)
+    );
+}
