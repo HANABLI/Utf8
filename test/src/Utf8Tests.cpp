@@ -90,5 +90,42 @@ TEST(Utf8Tests, DecodeValidSequences) {
 TEST(Utf8Tests, DecodeFromInputVector) {
     Utf8::Utf8 utf8;
     const auto actualDecoding = utf8.Decode(std::vector<uint8_t>{0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E});
-    ASSERT_EQ(std::vector< Utf8::UnicodeCodePoint >{0x65E5, 0x672C, 0x8A9E}, actualDecoding);
+    ASSERT_EQ((std::vector< Utf8::UnicodeCodePoint >{0x65E5, 0x672C, 0x8A9E}), actualDecoding);
+}
+
+TEST(Utf8Tests, UnexpectedContinuationBytes) {
+    std::vector< uint8_t > expectedEncoding{ 0x41, 0xE2, 0x89, 0xA2, 0x91, 0x2E };
+    Utf8::Utf8 utf8;
+    ASSERT_EQ((std::vector< Utf8::UnicodeCodePoint >{0x0041, 0x2262, 0xFFFD, 0x002E}), utf8.Decode(expectedEncoding));
+    //auto actualEncoding = Utf8.Encode<({0x0041, 0x2262, 0x0391, 0x002E});
+}
+
+TEST(Utf8Tests, DecodeBreakInSequence) {
+    Utf8::Utf8 utf8;
+    std::vector< uint8_t > expectedEncoding{ 0x41, 0xE2, 0x89, 0xA2, 0xCE, 0x2E };
+    ASSERT_EQ((std::vector< Utf8::UnicodeCodePoint >{0x0041, 0x2262, 0xFFFD, 0x002E}), utf8.Decode(expectedEncoding));
+}
+
+TEST(Utf8Tests, RejectOverlongSequences) {
+    const std::vector< std::vector< uint8_t > > testVectors{
+        // All U+2F ('/') should only need 1 byte
+        { 0xc0, 0xaf },
+        { 0xe0, 0x80, 0xaf },
+        { 0xf0, 0x80, 0x80, 0xaf },
+
+        // One less than the minimum code point value
+        // that should require this many encoded bytes
+        { 0xc1, 0xbf }, //U+7F (should be 1 byte)
+        { 0xe0, 0x9f, 0xbf }, // U+7FF (should be 2 bytes)
+        { 0xf0, 0x8f, 0xbf, 0xbf }, // U+FFFF (should be 3 bytes)
+    };
+    size_t index = 0;
+    for (const auto& test: testVectors) {
+        Utf8::Utf8 utf8;
+        ASSERT_EQ(
+            (std::vector< Utf8::UnicodeCodePoint >{0xFFFD}),
+            utf8.Decode(test)
+        ) << index;
+        ++index;
+    }
 }
