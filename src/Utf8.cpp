@@ -125,7 +125,7 @@ namespace Utf8 {
         );
     }
 
-    std::vector< UnicodeCodePoint > Utf8::Decode(const std::vector< UnicodeCodePoint >& encoded ) {
+    std::vector< UnicodeCodePoint > Utf8::Decode(const std::vector< uint8_t >& encoded ) {
         std::vector< UnicodeCodePoint > output;
         for (auto octet: encoded) {
             if (impl_->numBytesRemainingToDecode == 0) {

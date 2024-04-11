@@ -72,7 +72,7 @@ namespace Utf8 {
         * @return
         *       return all Unicode code points genereated by the decoder.
        */
-       std::vector< UnicodeCodePoint > Decode(const std::vector< UnicodeCodePoint >& encoded );
+       std::vector< UnicodeCodePoint > Decode(const std::vector< uint8_t >& encoded );
        /**
         * This method accept the given sequence of UTF-8 encoded bytes,
         * and returns any Unicode code points formed from them.
