@@ -2,92 +2,114 @@
 #define UTF8_HPP
 /**
  * @file Utf8.hpp
- * 
+ *
  * This module contains the declaration of the Utf8::Utf8 class.
- * 
+ *
  * © 2024 by Hatem Nabli
-*/
+ */
 #include <stddef.h>
 #include <stdint.h>
-#include <string>
 #include <memory>
+#include <string>
 #include <vector>
 
-
-namespace Utf8 {
+namespace Utf8
+{
     /**
      * This represents a single character in Unicode.
-    */
+     */
     typedef uint32_t UnicodeCodePoint;
 
     /**
      * This function is for convenience, converting a given ASCII string
      * into its equivalent sequence of UniCode code points.
-     * 
+     *
      * @param[in] ascii
      *      This is the ASCII string to convert.
-     * 
+     *
      * @return
      *      The Unicode code points for the given ASCII string are returned.
-    */
-   std::vector< UnicodeCodePoint > AsciiToUnicode(const std::string& ascii);
+     */
+    std::vector<UnicodeCodePoint> AsciiToUnicode(const std::string& ascii);
     class Utf8
     {
     public:
-
         ~Utf8();
-        Utf8(const Utf8&) = delete; // Copy Constructor that creates a new object by making a copy of an existing object. 
-        //It ensures that a deep copy is performed if the object contains dynamically allocated resources 
-        Utf8(Utf8&&); // Move Constructor that transfers resources from an expiring object to a newly constructed object.
-        Utf8& operator=(const Utf8&) = delete; //Copy Assignment Operation That assigns the values of one object to another object using the assignment operator (=)
-        Utf8& operator=(Utf8&&); //Move Assignment Operator: Amove assignment operator efficiently transfers resources from one object to another.
-    
+        Utf8(const Utf8&) = delete;  // Copy Constructor that creates a new object by making a copy
+                                     // of an existing object.
+        // It ensures that a deep copy is performed if the object contains dynamically allocated
+        // resources
+        Utf8(Utf8&&);  // Move Constructor that transfers resources from an expiring object to a
+                       // newly constructed object.
+        Utf8& operator=(const Utf8&) =
+            delete;  // Copy Assignment Operation That assigns the values of one object to another
+                     // object using the assignment operator (=)
+        Utf8& operator=(Utf8&&);  // Move Assignment Operator: Amove assignment operator efficiently
+                                  // transfers resources from one object to another.
+
     public:
         /**
-        * This is the default constructor
-        */
-       Utf8();
-        //public methods
+         * This is the default constructor
+         */
+        Utf8();
+        // public methods
         /**
          * This method encodes the given sequence of Unicode code points
          * into UTF-8.
-         * 
+         *
          * @param[in] codePoints
          *      Thes are the unicode code points to encode.
-         * @return 
+         * @return
          *      The UTF-8 encoding of the given Unicode code points is returned
-        */
-        std::vector< uint8_t > Encode(const std::vector< UnicodeCodePoint >& codePoints);
-       /**
-        * This method accept the given sequence of UTF-8 encoded bytes,
-        * and returns any Unicode code points formed from them.
-        * 
-        * Any partial code sequence at the end is held onto and used first
-        * when this method is called again later.
-        * 
-        * this method accept a secquence of bites 
-        * 
-        * @param[in] encoded
-        *       This is the encoded sequence of UTF-8 bytes to decode.
-        * @return
-        *       return all Unicode code points genereated by the decoder.
-       */
-       std::vector< UnicodeCodePoint > Decode(const std::vector< uint8_t >& encoded );
-       /**
-        * This method accept the given sequence of UTF-8 encoded bytes,
-        * and returns any Unicode code points formed from them.
-        * 
-        * Any partial code sequence at the end is held onto and used first
-        * when this method is called again later.
-        * 
-        * this method accept a C++ string
-        * 
-        * @param[in] encoded
-        *       This is the encoded sequence of UTF-8 bytes to decode.
-        * @return
-        *       return all Unicode code points genereated by the decoder.
-       */
-       std::vector< UnicodeCodePoint > Decode(const std::string& encoded );
+         */
+        std::vector<uint8_t> Encode(const std::vector<UnicodeCodePoint>& codePoints);
+        /**
+         * This method accept the given sequence of UTF-8 encoded bytes,
+         * and returns any Unicode code points formed from them.
+         *
+         * Any partial code sequence at the end is held onto and used first
+         * when this method is called again later.
+         *
+         * this method accept a secquence of bites
+         *
+         * @param[in] encoded
+         *       This is the encoded sequence of UTF-8 bytes to decode.
+         * @return
+         *       return all Unicode code points genereated by the decoder.
+         */
+        std::vector<UnicodeCodePoint> Decode(const std::vector<uint8_t>& encoded);
+        /**
+         * This method accept the given sequence of UTF-8 encoded bytes,
+         * and returns any Unicode code points formed from them.
+         *
+         * Any partial code sequence at the end is held onto and used first
+         * when this method is called again later.
+         *
+         * this method accept a C++ string
+         *
+         * @param[in] encoded
+         *       This is the encoded sequence of UTF-8 bytes to decode.
+         * @return
+         *       return all Unicode code points genereated by the decoder.
+         */
+        std::vector<UnicodeCodePoint> Decode(const std::string& encoded);
+        /**
+         * This method take the given UTF-8 encoded bytes sequence and returns
+         * an indication of whether or not the encoding is valid.
+         *
+         * @param[in] encoded
+         *      This is the sequence of UTF-8 encoded to chek is valid
+         *      or not.
+         * @param[in] final
+         *      This flag indicates whether or not this is the end of the encoding
+         *      If it is not, any partial code sequence at the end is held onto
+         *      and used first when this method is called again later.
+         * @return
+         *      Returns an indication of wether or not the encoded sequence
+         *      is valid or not.
+         */
+        bool IsValidEncoding(const std::string& encoded, bool final = true);
+
     private:
         /* data */
 
@@ -95,18 +117,15 @@ namespace Utf8 {
          * This is the type of structure that contains the private
          * properties of the instance. It is defined in the implementation
          * and declared here to ensure that iwt is scoped inside the class.
-        */
-       struct Impl;
+         */
+        struct Impl;
 
-       /**
-        * This contains the private properties of the instance.
-        */       
-       std::unique_ptr<struct Impl> impl_;
-
+        /**
+         * This contains the private properties of the instance.
+         */
+        std::unique_ptr<struct Impl> impl_;
     };
-    
-}
 
-
+}  // namespace Utf8
 
 #endif /*UTF8_HPP*/
